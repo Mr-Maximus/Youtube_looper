@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<meta name="robots" content="noindex">
+<html>
+  <body>
+    <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
+    <div id="player"></div>
+    
+    <script>
+      // 2. This code loads the IFrame Player API code asynchronously.
+      var tag = document.createElement('script');
+
+      tag.src = "https://www.youtube.com/iframe_api";
+      var firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    </script>
+  <script id="jsbin-javascript">
+var timeStart = "00:00:00";
+var timeEnd = "00:03:28";
+
+var loopStart = getSeconds(timeStart);
+var loopEnd =  getSeconds(timeEnd);
+
+var section = {
+  start: loopStart,
+  end: loopEnd
+};
+function getSeconds(str) {
+    var p = str.split(':'),
+    s = 0, m = 1;
+
+    while (p.length > 0) {
+        s += m * parseInt(p.pop(), 10);
+        m *= 60;
+    }
+
+    return s;
+}
+// 3. This function creates an <iframe> (and YouTube player)
+//    after the API code downloads.
+var player;
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player(
+    'player',
+    {
+      height: '360',
+      width: '640',
+      videoId: 'o87hNhgfZvI',
+      events: {
+        'onReady': onPlayerReady,
+        'onStateChange': onPlayerStateChange
+      }
+    }
+  );
+}
+
+/*function onPlayerReady(event) {
+  player.seekTo(section.start);
+  player.playVideo();
+}*/
+function onPlayerReady(event) {
+        player.seekTo(section.start);
+        player.setPlaybackRate(1);     // choose .25, .50, .75, or 1
+        player.playVideo();
+    }
+/*function onPlayerStateChange(event) {
+  if (event.data == YT.PlayerState.PLAYING) {
+    var duration = section.end - section.start;
+    setTimeout(restartVideoSection, duration * 1000);
+  }
+}*/
+function onPlayerStateChange(event) {
+    if (event.data == YT.PlayerState.PLAYING) {
+        var duration;
+
+        var playerSpeed = player.getPlaybackRate();
+
+        if (playerSpeed == .25)
+            duration = (section.end - section.start) * 4;
+        else if (playerSpeed == .5) 
+            duration = (section.end - section.start) * 2;
+        else if (playerSpeed == .75) 
+            duration = (section.end - section.start) * 1.5;
+        else if (playerSpeed == 1) 
+            duration = (section.end - section.start);
+
+        setTimeout(restartVideoSection, duration * 1000);
+    }
+  }
+function restartVideoSection() {
+  player.seekTo(section.start);
+}
+</script>
+</body>
+</html>
